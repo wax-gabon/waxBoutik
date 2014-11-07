@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width , user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+	<meta http-equiv="Cache-Control" content="no-cache"> 
+	<meta http-equiv="Pragma" content="no-cache"> 
+	<meta http-equiv="Expires" content="0">
+	<script src="/socket.io/socket.io.js"></script>
+	<link href='//fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'>
+	<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3&sensor=true"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+	<script src="js/socket.js"></script>
+	<script src="js/map.js"></script>
+	<script src="js/main.js"></script> <!-- Gem jQuery -->
+	<script src="js/modernizr.js"></script> <!-- Modernizr -->
+
+	<link rel="stylesheet" href="css/reset.css"> <!-- CSS reset -->
+	<link rel="stylesheet" href="css/style.css"> <!-- Gem style -->
+	<link rel="stylesheet" href="css/image.css">
+
+	<title>Bon App Admin ツ﻿</title>
+</head>
+<body class="Bokeh" onload="init()">
+
+	<div id="loader"></div>
+	<input type="hidden" id="pseudo" value="">
+	<input type="hidden" id="id" value="ADMIN">
+	<input type="hidden" id="mdp" value="ADMIN">
+	<input type="hidden" id="type" value="ADMIN">
+	<input type="hidden" id="latitude" value="">
+	<input type="hidden" id="longitude" value="">
+	<input type="hidden" id="drag" value="false">
+	<header>
+		<div id="logo"><img id="logoImg" src="img/close.svg" alt="Homepage"></div>
+
+		<div id="cd-hamburger-menu"><a class="cd-img-replace" href="#0">Menu</a></div>
+		<div id="cd-chat-trigger"><a class="cd-img-replace" href="#0">Chat</a></div>
+	</header>
+
+	<nav id="main-nav">
+		<ul>
+			<li><a id="mCOMMANDE" class="MENU" href="javascript:MENU ('COMMANDE')">COMMANDES</a></li>
+			<li><a id="mARTICLE" class="MENU" href="javascript:MENU ('ARTICLE')">PRODUITS</a></li>
+			<li><a id="mCLIENT" class="MENU" href="javascript:MENU ('CLIENT')">CLIENTS</a></li>
+			<li><a id="mGEOLOK" class="MENU" href="javascript:MENU ('GEOLOK')">GEOLOCALISATION</a></li>
+		</ul>
+	</nav>
+
+	<main>
+
+		<div id="CLIENT" class="MAIN" style="display:none;">
+			
+			<div id="popCLIENT">
+				<select class="Vert" id="sCLIENT" onchange="CLIENT($('#sCLIENT').val())">
+				</select>
+			</div>
+			<div id="posLeft">
+				<input type="text" id="pseudoClient" placeholder="Indiquez le pseudo">
+				<input type="text" id="mdpClient" placeholder="Indiquez le password">
+				<input type="text" id="nomClient" placeholder="Indiquez le nom">
+				<input type="text" id="emailClient" placeholder="Indiquez l'eMail">
+				<input type="text" id="steClient" placeholder="Indiquez la société">
+				<input type="text" id="telClient" placeholder="Indiquez le téléphone">
+				<input type="text" id="adresseClient" placeholder="Indiquez l'adresse">
+			</div>
+			<div id="posRight">
+				<input type="text" id="latClient" placeholder="Indiquez la latitude">
+				<input type="text" id="lonClient" placeholder="Indiquez la longitude">
+				<textarea style="height: 175px;" id="obsClient" placeholder="Indiquez les observations"></textarea>
+				<div style="float:left;text-align: left;color: red;" id="checkGauche">
+					<input style="width:20px;" type="checkbox" name="rougeClient" id="rougeClient" value="">Liste rouge
+				</div>
+				<div style="float:right;text-align: right;" id="checkDroite">
+					ACTIF<input style="width:20px;" type="checkbox" name="actifClient" id="actifClient" value="">
+				</div>
+				<h4></h4>
+				<div id="posRight">
+					<a class="Envoyer-btn Vert" id="upClient" href="javascript:upClient();">VALIDER</a>
+				</div>
+				<div id="posLeft">
+					<a class="Valider-btn Rouge" id="supClient" href="javascript:supClient();">SUPPRIMER</a>
+				</div>
+			</div>
+			<h4></h4>
+		</div>
+		<div id="listeCOMMANDECLIENT" class="MAIN" style="margin:5px auto;display:none;">
+
+			<div class="responsive-table-line">
+				<table id="tableCommande" class="table table-bordered  table-striped " >
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Commande</th>
+							<th>Client</th>
+							<th>Article</th>
+							<th class="Droite">Total</th>
+							<th class="Centre">Position</th>
+						</tr>
+						<tbody></tbody>
+					</thead>
+				</table>
+			</div>
+		</div>
+
+		<div id="COMMANDE" class="MAIN">
+			<div class="responsive-table-line">
+				<table id="tableCommandeAdmin" class="table table-bordered  table-striped " >
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Commande</th>
+							<th>Client</th>
+							<th>Article</th>
+							<th class="Droite">Total</th>
+							<th class="Centre">Position</th>
+						</tr>
+					</thead>
+					<tbody>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div id="GEOLOK" class="MAIN" style="display:none;">
+			<div id="map_canvas"></div>
+		</div>
+
+		<div id="ARTICLE" class="MAIN" style="display:none;">
+			<input type="hidden" id="photo" value="">
+			<iframe style="display:none;" src="iframe.html" width="100" height="100" name="upFile" id="upFile"></iframe>
+			<div id="popArticle">
+				<select class="Vert" id="sPRODUIT" onchange="PRODUIT($('#sPRODUIT').val())">
+				</select>
+			</div>
+			<div id="posRight">
+				<input type="text" id="famille" placeholder="Indiquez la famille">
+				<input type="text" id="article" placeholder="Indiquez le nom">
+				<input type="text" id="prix" placeholder="Indiquez le prix">
+				<textarea style="height: 88px;" id="descriptif" placeholder="Indiquez le descriptif"></textarea>
+				<div id="posRight">
+					<a class="Envoyer-btn Vert" id="addArt" href="javascript:addArt();">VALIDER</a>
+				</div>
+				<div id="posLeft">
+					<a class="Valider-btn Rouge" id="supArt" href="javascript:supArt();">SUPPRIMER</a>
+				</div>
+			</div>
+			<div id="posLeft">
+				<div id="photoArticle"></div>
+				<a class="Envoyer-btn Jaune" href="javascript:upFile.document.getElementById('article').value=document.getElementById('article').value;upFile.document.Load.uploadfile.click();">SELECTIONNER</a>
+			</div>
+			<h4></h4>
+		</div>
+
+
+	</main>
+
+
+	<div id="cd-shadow-layer"></div>
+
+	<div id="cd-chat">
+		<div id="Saisie">
+			<input id="chat" placeholder="Chatez ici...">
+			<a href="javascript:sendChat();" id="bChat" class="Vert Envoyer-btn">GO</a>
+		</div>
+		<div id="conversation"></div>
+	</div>
+
+	<audio preload="auto" id="son"><source src="audio/beep.mp3" type="audio/mp3"><source src="audio/beep.ogg" type="audio/ogg"></audio>
+
+
+	<script>
+
+		function init(){
+			socket.emit('cnxUser',document.getElementById('id').value,document.getElementById('mdp').value,document.getElementById('type').value);
+			document.getElementById('famille').value='';
+			document.getElementById('article').value='';
+			document.getElementById('prix').value='';
+			document.getElementById('descriptif').value='';
+			document.getElementById('photo').value='';
+			document.getElementById('chat').value='';
+			document.getElementById('pseudo').value='';
+			document.getElementById('latitude').value='';
+			document.getElementById('longitude').value='';
+			document.getElementById('loader').style.display = 'block';
+		}
+
+		function PRODUIT(article){
+			document.getElementById('loader').style.display = 'block';
+			socket.emit('findArt',article);
+		}
+
+		function supArt(){
+			if (confirm('En êtes vous certain ?')) { 
+				document.getElementById('loader').style.display = 'block';
+				socket.emit('supArt',document.getElementById('article').value);
+			}
+		}
+
+		function addArt(){
+			var famille=document.getElementById('famille').value,
+			article=document.getElementById('article').value,
+			prix=document.getElementById('prix').value,
+			descriptif=document.getElementById('descriptif').value,
+			photo=document.getElementById('photo').value;
+
+			if (famille!='' & article!='' & prix!='' & descriptif!='') {
+				document.getElementById('loader').style.display = 'block';
+				socket.emit('addArt',famille,article,prix,descriptif,photo);
+			}else{
+				alert('Tous les champs sont requis !')
+			}
+		}
+			//_________________________________________________________________ upLoad
+			function upLoad(article,chemin)
+			{
+				if (article!='') {
+					if (chemin) {
+						var startIndex = (chemin.indexOf('\\') >= 0 ? chemin.lastIndexOf('\\') : chemin.lastIndexOf('/'));
+						var chemin = chemin.substring(startIndex);
+						if (chemin.indexOf('\\') === 0 || chemin.indexOf('/') === 0) {
+							chemin = chemin.substring(1);
+						}
+						document.getElementById('loader').style.display = 'block';
+						socket.emit('upLoad',article,chemin);
+					}
+				}else{
+					alert('Vous devez indiquer un nom d\'article')
+				}
+			}
+
+			function MENU (MENU) {
+				$('.MAIN').hide();
+				$('.MENU').removeClass('current');
+				$('#'+MENU).fadeIn();
+				$('#m'+MENU).addClass('current');
+				$('#cd-shadow-layer').click();
+				if (MENU=='COMMANDE') {
+					$('#tableCommande tbody').html('');
+				}
+				if(MENU=='COMMANDE'){
+					$('#tableCommandeAdmin tbody').html('');
+					socket.emit('listeCommande',document.getElementById('pseudo').value);
+				}
+				if (MENU=='ARTICLE') {	
+					document.getElementById('loader').style.display = 'block';
+					socket.emit('upFamArt');
+				}
+				if (MENU=='CLIENT') {	
+					document.getElementById('loader').style.display = 'block';
+					//if (document.getElementById('pseudoClient').value=='') {
+						socket.emit('upListeClient');
+						$('#listeCOMMANDECLIENT').fadeIn();
+					//}
+				}else{
+					$('#listeCOMMANDECLIENT').fadeOut();
+				}
+				if (MENU=='GEOLOK') {
+					if(!window.map){
+						document.getElementById('loader').style.display = 'block';
+						getOpen();
+					}
+				}
+			}
+
+
+			function CLIENT(client){
+				document.getElementById('loader').style.display = 'block';
+				socket.emit('findClient',client);
+			}
+
+			function upClient(){
+				var pseudoClient=document.getElementById('pseudoClient').value,
+				mdpClient=document.getElementById('mdpClient').value,
+				nomClient=document.getElementById('nomClient').value,
+				emailClient=document.getElementById('emailClient').value,
+				steClient=document.getElementById('steClient').value,
+				telClient=document.getElementById('telClient').value,
+				adresseClient=document.getElementById('adresseClient').value,
+				latClient=document.getElementById('latClient').value,
+				lonClient=document.getElementById('lonClient').value,
+				obsClient=document.getElementById('obsClient').value;
+
+				if(document.getElementById("rougeClient").checked == true) {
+					rougeClient = true;
+				}else{
+					rougeClient = false;
+				}
+				if(document.getElementById("actifClient").checked == true) {
+					actifClient = true;
+				}else{
+					actifClient = false;
+				}
+
+				if (pseudoClient!='' & mdpClient!='' & nomClient!='' & emailClient!='' & steClient!='' & telClient!='' & adresseClient!='') {
+					document.getElementById('loader').style.display = 'block';
+					socket.emit('upClient',pseudoClient,mdpClient,nomClient,emailClient,steClient,telClient,adresseClient,latClient,lonClient,obsClient,rougeClient,actifClient);
+				}else{
+					alert('Tous les champs sont requis !')
+				}
+			}
+
+			function supClient(){
+				if (confirm('En êtes vous certain ?')) { 
+					document.getElementById('loader').style.display = 'block';
+					socket.emit('supClient',document.getElementById('pseudoClient').value);
+				}
+			}
+
+
+			$('id').bind('touchstart', function() {});
+
+
+			//_________________________________________________________________ upListeCommandeAdmin
+			socket.on('upListeCommandeAdmin', function (result) {
+				document.getElementById('loader').style.display = 'none';
+				//$('#tableCommande tbody').prepend(result);
+				$('#tableCommandeAdmin tbody').prepend(result);
+			});
+
+			function upPosition(commande,position){
+				document.getElementById('loader').style.display = 'block';
+				socket.emit('upPosition',commande,position);
+			}
+		</script>
+	</body>
+	</html>

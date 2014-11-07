@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width , user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+	
+	<script src="/socket.io/socket.io.js"></script>
+	<link href='//fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'>
+	<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3&sensor=true"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+	<script src="js/socket.js"></script>
+	<script src="js/map.js"></script>
+	<script src="js/main.js"></script> <!-- Gem jQuery -->
+	<script src="js/modernizr.js"></script> <!-- Modernizr -->
+
+	<link rel="stylesheet" href="css/reset.css"> <!-- CSS reset -->
+	<link rel="stylesheet" href="css/style.css"> <!-- Gem style -->
+	<link rel="stylesheet" href="css/image.css">
+
+	<title>Bon App ツ﻿</title>
+</head>
+<body class="Bokeh" onload="init()">
+
+	<div id="loader"></div>
+	<input type="hidden" id="pseudo" value="">
+	<input type="hidden" id="type" value="CLIENT">
+	<input type="hidden" id="latitude" value="">
+	<input type="hidden" id="longitude" value="">
+	<input type="hidden" id="commande" value="">
+	<input type="hidden" id="drag" value="false">
+	<header>
+		<div id="logo"><img id="logoImg" src="img/close.svg" alt="Homepage"></div>
+
+		<div id="cd-hamburger-menu"><a class="cd-img-replace" href="#0">Menu</a></div>
+		<div id="cd-cart-trigger"><a class="cd-img-replace" href="#0">Cart</a></div>
+		<div id="cd-chat-trigger"><a class="cd-img-replace" href="#0">Chat</a></div>
+	</header>
+
+	<nav id="main-nav">
+		<ul>
+			<li><a id="mACCEUIL" class="MENU current" href="javascript:MENU ('ACCEUIL');">ACCEUIL</a></li>
+			<li><a id="mPRODUIT" class="MENU" href="javascript:MENU ('PRODUIT')">PRODUITS</a></li>
+			<li><a id="mCOMMANDE" class="MENU" href="javascript:MENU ('COMMANDE')">COMMANDE</a></li>
+			<li><a id="mGEOLOK" class="MENU" href="javascript:MENU ('GEOLOK')">GEOLOCALISATION</a></li>
+			<li><a id="mCONTACT" class="MENU" href="javascript:MENU ('CONTACT')">CONTACT</a></li>
+		</ul>
+	</nav>
+
+	<main>
+		<div id="ACCEUIL" class="MAIN">
+			<div style="display:none;" class="TEXT" id="Text01">Bienvenue<br>sur notre site de<br>livraison à domicile</div> 
+			<div style="display:none;" class="TEXT" id="Text02">Commandez votre repas<br>Nous vous livrons<br>la ou vous êtes... </div> 
+			<div style="display:none;" class="TEXT" id="Text03">régalez vous<br>et<br>Bon appétit !!</div> 
+		</div>
+
+		<div id="CONTACT" class="MAIN" style="display:none;">
+			<div id="PHOTO"></div>
+			<h1>Qui est WAX</h1>
+			<h3>WAX GABON est une start-up spécialisée dans le développement spécifique sur l'Internet. Bénéficiez de notre expérience pour vous apporter des solutions adaptées à votre gestion d'entreprise... Créer des applications web dynamiques pour les petites et grandes entreprises, est notre passion !</h3>
+			<h4></h4>
+			<br>
+			<br>
+			<h1>Contactez Nous</h1>
+			<div id="posLeft">
+				<input type="text" id="name" placeholder="Indiquez votre nom">
+				<input type="text" id="email_address" placeholder="Indiquez votre eMail">
+				<input type="text" id="company" placeholder="Indiquez votre société">
+				<input type="text" id="phone_number" placeholder="Indiquez votre téléphone">
+			</div>
+			<div id="posRight">
+				<textarea style="height: 143px;" id="The_message" placeholder="Indiquez votre message"></textarea>
+				<a class="Vert Envoyer-btn" href="javascript:upMail();">ENVOYER</a>
+			</div>
+			<h4></h4>
+			<br>
+			<br>
+			<div id="posLeft">
+				<h1>Téléphonez Nous</h1>
+			</div>
+			<div id="posRight">
+				<h1 style="margin: 0px;">+241 07 79 59 91</h1>
+			</div>
+			<h4></h4>
+		</div>
+
+		<div id="PRODUIT" class="MAIN" style="display:none;">
+			<div id="popFamille">
+				<select id="sPRODUIT" class="Vert" onchange="PRODUIT($('#sPRODUIT').val())">
+				</select>
+			</div>
+
+			<ul id="cd-gallery-items" class="cd-container">
+			</ul> <!-- cd-gallery-items -->
+		</div>
+
+		<div id="COMMANDE" class="MAIN" style="display:none;">
+			<div id="posRight" style="padding: 0 0 0px 20px;">
+				<h1>Enregistrez vous...</h1>
+				<input type="text" id="id" placeholder="Indiquez votre pseudo">
+				<input type="password" id="mdp" placeholder="Indiquez votre mot de passe">
+				<a href="javascript:addUser();" id="bEnregistrer" class="Orange Enregistrer-btn">S'ENREGISTRER</a>
+				<a href="javascript:cnxUser();" id="bConnexion" class="Jaune Connexion-btn">CONNEXION</a>
+				<a href="javascript:decnxUser();" id="bDeconnexion" class="Rouge Deconnexion-btn" style="display:none;" >DECONNEXION</a>
+				<br>
+				<a href="javascript:VALIDER();" id="bValider" style="display:none;" class="Vert Valider-btn">VALIDER</a>
+			</div>
+			<div style="width: 100%;">
+				<h1>Commander ?</h1>
+				<h3>C'est trés simple !!<br>
+				1_ Saisisez votre pseudo, votre mot de passe et cliquer sur <b style="font-weight: bold;">S'ENREGISTRER</b>.<br>
+				2_ Remplissez et envoyez la fiche <a style="font-weight: bold;" id="mCONTACT" class="MENU" href="javascript:MENU ('CONTACT')">CONTACT</a>. Nous vous contacterons pour valider ensemble votre ouverture de compte client... <br>
+				3_ Une fois votre compte acivé, commandez tout simplement en ligne !!<br><br>
+				Apres, allez dans <b style="font-weight: bold;">GEOLOCALISATION</b>. Vous verrez un <b style="font-weight: bold;">point vert</b> signalant votre position sur la carte. Vous pouvez déplacer ce <b style="font-weight: bold;">point vert</b> à l'endroit exact du lieux ou nous allons vous livrer.
+				<br>Si vous avez le moindre probleme, nous sommes à votre disposition par téléphone ou sur le <b style="font-weight: bold;">CHAT</b>.
+				<br>Bon appetit ツ﻿
+				</h3>
+			</div>
+			<h4></h4>
+		</div>
+		<div id="listeCOMMANDE" class="MAIN" style="margin:5px auto;display:none;">
+
+			<div class="responsive-table-line">
+				<table id="tableCommande" class="table table-bordered  table-striped " >
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Commande</th>
+							<th>Client</th>
+							<th>Article</th>
+							<th class="Droite">Total</th>
+							<th class="Centre">Position</th>
+						</tr>
+						<tbody></tbody>
+					</thead>
+				</table>
+			</div>
+		</div>
+
+		<div id="GEOLOK" class="MAIN" style="display:none;">
+			<div id="map_canvas"></div>
+		</div>
+
+	</main>
+
+	<div id="cd-shadow-layer"></div>
+
+	<div id="cd-chat">
+		<div id="Saisie">
+			<input id="chat" placeholder="Chatez ici...">
+			<a href="javascript:sendChat();" id="bChat" class="Vert Envoyer-btn">GO</a>
+		</div>
+		<div id="conversation"></div>
+	</div>
+
+	<div id="cd-cart">
+		<h2>COMMANDE</h2>
+		<ul id="cd-cart-ul" class="cd-cart-items">
+		</ul> <!-- cd-cart-items -->
+
+		<div class="cd-cart-total">
+			<p>Total <span id='TOTAL'>F.cfa 0</span></p>
+		</div> <!-- cd-cart-total -->
+
+		<a href="javascript:if($('#TOTAL').html()!='F.cfa 0'){TOTAL($('#TOTAL').html());MENU ('COMMANDE');}" class="checkout-btn">COMMANDER</a>
+
+	</div> <!-- cd-cart -->
+
+	<audio preload="auto" id="son"><source src="audio/beep.mp3" type="audio/mp3"><source src="audio/beep.ogg" type="audio/ogg"></audio>
+
+	<script>
+		function addPanier(article,prix){
+			document.getElementById('loader').style.display = 'block';
+			if (document.getElementById('pseudo').value=='') {
+				var client='INVITE';
+			}else{
+				var client=document.getElementById('pseudo').value;
+			}
+			socket.emit('addPanier',document.getElementById('commande').value,client,article,prix);
+		}
+		function supPanier(commande,article){
+			document.getElementById('loader').style.display = 'block';
+			socket.emit('supPanier',commande,article);
+		}
+
+		function init(){
+			MENU ('ACCEUIL');	
+			socket.emit('storeOpen');
+
+			document.getElementById('name').value='';
+			document.getElementById('email_address').value='';
+			document.getElementById('phone_number').value='';
+			document.getElementById('The_message').value='';
+			document.getElementById('commande').value='';
+
+			document.getElementById('chat').value='';
+
+			document.getElementById('pseudo').value='';
+			document.getElementById('latitude').value='';
+			document.getElementById('longitude').value='';
+
+		}
+
+		function upMail(){
+			if (document.getElementById('name').value!='' & document.getElementById('email_address').value!='' & document.getElementById('phone_number').value!='' & document.getElementById('The_message').value!='') {
+				document.getElementById('loader').style.display = 'block';
+				socket.emit('upMail',document.getElementById('name').value,document.getElementById('email_address').value,document.getElementById('company').value,document.getElementById('phone_number').value,document.getElementById('The_message').value);
+			}else{
+				alert('Les rubriques nom, eMail, téléphone, et, message sont obligatoires !');
+			}
+		}
+
+		function addUser(){
+			if (document.getElementById('id').value!='' & document.getElementById('mdp').value!='' ) {
+				document.getElementById('loader').style.display = 'block';
+				socket.emit('addUser',document.getElementById('id').value,document.getElementById('mdp').value,document.getElementById('type').value);
+			}else{
+				alert('Le pseudo et le mot de passe sont obligatoires !');
+			}
+		}
+
+		function cnxUser(){
+			if (document.getElementById('id').value!='' & document.getElementById('mdp').value!='' ) {
+				document.getElementById('loader').style.display = 'block';
+				socket.emit('cnxUser',document.getElementById('id').value,document.getElementById('mdp').value,document.getElementById('type').value);
+			}else{
+				alert('Le pseudo et le mot de passe sont obligatoires !');
+			}
+		}
+
+		function decnxUser(){
+
+			socket.emit('supUser',document.getElementById('pseudo').value);
+			document.getElementById('pseudo').value='';
+			document.getElementById('id').value='';
+			document.getElementById('mdp').value='';
+			$('#tableCommande tbody').html('');
+			$('#bDeconnexion').fadeOut();
+			$('#bEnregistrer').fadeIn();
+			$('#bConnexion').fadeIn();
+		}
+
+		function PRODUIT(Famille){
+			document.getElementById('loader').style.display = 'block';
+			socket.emit('upFamille',Famille);
+		}
+
+		function VALIDER(){
+			if (document.getElementById('pseudo').value!='') {
+				document.getElementById('loader').style.display = 'block';
+				socket.emit('addCommande',document.getElementById('pseudo').value,document.getElementById('commande').value);
+			}else{
+				alert('Vous devez d\'abord vous enregistrer !!');
+			}
+		}
+
+		function TOTAL(TOTAL){
+			if (TOTAL!='0') {$('#bValider').html('VALIDER '+TOTAL).fadeIn();}
+		}
+
+		function MENU (MENU) {
+			$('.MAIN').hide();
+			$('.MENU').removeClass('current');
+			$('#'+MENU).fadeIn();
+			$('#m'+MENU).addClass('current');
+			$('#cd-shadow-layer').click();
+			if (MENU=='PRODUIT') {
+				socket.emit('upFamille','');
+			}
+			if (MENU=='COMMANDE') {
+				$('#listeCOMMANDE').fadeIn();
+			}else{
+				$('#listeCOMMANDE').fadeOut();
+			}
+			if (MENU=='GEOLOK') {
+				if(!window.map){
+					document.getElementById('loader').style.display = 'block';
+					getOpen();
+					google.maps.event.trigger(map, 'resize');
+					map.panTo(new google.maps.LatLng(document.getElementById('latitude').value,document.getElementById('longitude').value));
+				}
+			}
+		}
+
+		$(window).bind('resize', function()
+		{
+			var preferredFontSize = 500; // %
+			var preferredSize = 1024 * 768;
+			var currentSize = $(window).width() * $(window).height();
+			var scalePercentage = Math.sqrt(currentSize) / Math.sqrt(preferredSize);
+			var newFontSize = preferredFontSize * scalePercentage;
+			$(".TEXT").css("font-size", newFontSize + '%');
+		}).trigger('resize');
+
+		$('body').bind('touchstart', function() {});
+
+			function upPosition(commande,position){
+			}
+
+		function runslide() {
+			$('#Text01').fadeIn(1000).delay(2000).fadeOut(1500, function() {
+				$('#Text02').fadeIn(1000).delay(2000).fadeOut(1500, function() {
+					$('#Text03').fadeIn(1000).delay(2000).fadeOut(1500, function() {
+						runslide();
+					});
+				});
+			});
+		}
+		runslide();
+	</script>
+
+</body>
+</html>
